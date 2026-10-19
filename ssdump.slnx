@@ -1,0 +1,5 @@
+<Solution>
+  <Project Path="ssdumpConsole/ssdumpConsole.csproj" />
+  <Project Path="ssdumpGUI/ssdumpGUI.csproj" />
+  <Project Path="ssdumpLibrary/ssdumpLibrary.csproj" />
+</Solution>

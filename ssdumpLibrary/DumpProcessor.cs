@@ -20,7 +20,7 @@ namespace ssdump
         /// <summary>
         /// Program version.
         /// </summary>
-        public static readonly string ProgramVersion = "0.9.4";
+        public static readonly string ProgramVersion = "0.9.5";
 
         public string Host { get; set; }
         public string Username { get; set; }
@@ -166,7 +166,7 @@ namespace ssdump
                             urns.Add(extendedProperty.Urn);
                         }
 
-                        foreach (Index index in table.Indexes)
+                        foreach (Microsoft.SqlServer.Management.Smo.Index index in table.Indexes)
                         {
                             urns.Add(index.Urn);
 
@@ -278,3 +278,4 @@ namespace ssdump
         }
     }
 }
+
