@@ -133,6 +133,14 @@ namespace ssdump
             Console.WriteLine($"Opened connection to [{Host}].[{DatabaseName}]");
             if (server.ConnectionContext.IsOpen)
             {
+                // Without VIEW DEFINITION, the server hides object definitions (defaults, views, procedures, etc.) and SMO
+                // either fails partway through or hangs. Checking up front gives a clear error instead.
+                object hasViewDefinition = server.ConnectionContext.ExecuteScalar("SELECT HAS_PERMS_BY_NAME(DB_NAME(), 'DATABASE', 'VIEW DEFINITION')");
+                if (!(hasViewDefinition is int permission && permission == 1))
+                {
+                    throw new Exception($"Your login needs the VIEW DEFINITION permission on [{DatabaseName}] to script it. Ask a DBA to run: GRANT VIEW DEFINITION TO [<your user>];");
+                }
+
                 // Set up scripter object and script options.
                 Scripter scripter = new(server);
 
@@ -384,7 +392,7 @@ namespace ssdump
 
                 // The scripter also prefetches child objects itself while scripting, separately from database.PrefetchObjects.
                 // Only turned off for this schema pass: with it off, SMO's data scripting queries tables from the wrong database.
-                scripter.PrefetchObjects = !NoPrefetch; // Prefetching hangs on tables with full-text indexes, so we have to force EnumScriptWithList() to respect our settings here.
+                scripter.PrefetchObjects = !NoPrefetch;
                 scripter.EnumScriptWithList(urns.ToArray()); // Will write database/schemas/tables to file.
                 scripter.PrefetchObjects = true;
                 writer.CopyFrom(tempFilename);
