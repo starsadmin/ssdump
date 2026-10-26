@@ -50,6 +50,21 @@ namespace ssdump
         public bool IncludeUsers { get; set; }
 
         /// <summary>
+        /// With IncludeCreateDatabase, folder for data files (.mdf/.ndf) in the CREATE DATABASE statement, instead of the source database's.
+        /// </summary>
+        public string DataDirectory { get; set; }
+
+        /// <summary>
+        /// With IncludeCreateDatabase, folder for log files (.ldf) in the CREATE DATABASE statement. Defaults to DataDirectory.
+        /// </summary>
+        public string LogDirectory { get; set; }
+
+        /// <summary>
+        /// Original database file path to new path, for rewriting the CREATE DATABASE statement (see RewriteDatabaseFilePaths).
+        /// </summary>
+        private Dictionary<string, string> databaseFilePaths = [];
+
+        /// <summary>
         /// Skip prefetching table details, both up front and inside the scripter, so SMO loads them object by object instead.
         /// For troubleshooting slow or hanging prefetches.
         /// </summary>
@@ -71,6 +86,8 @@ namespace ssdump
             Host = "localhost";
             IncludeCreateDatabase = false;
             IncludeUsers = false;
+            DataDirectory = null;
+            LogDirectory = null;
             NoData = false;
             NoPrefetch = false;
             IncludedDataTables = null;
@@ -181,6 +198,28 @@ namespace ssdump
                     {
                         urns.Add(database.Urn);
 
+                        // SMO has no scripting option for file locations; it copies the source database's paths.
+                        // So note each file's new path here, and WriteScripts swaps them into the script.
+                        databaseFilePaths = [];
+                        string logDirectory = LogDirectory ?? DataDirectory;
+                        if (DataDirectory != null)
+                        {
+                            foreach (FileGroup fileGroup in database.FileGroups)
+                            {
+                                foreach (DataFile dataFile in fileGroup.Files)
+                                {
+                                    databaseFilePaths[dataFile.FileName] = Path.Combine(DataDirectory, Path.GetFileName(dataFile.FileName));
+                                }
+                            }
+                        }
+                        if (logDirectory != null)
+                        {
+                            foreach (LogFile logFile in database.LogFiles)
+                            {
+                                databaseFilePaths[logFile.FileName] = Path.Combine(logDirectory, Path.GetFileName(logFile.FileName));
+                            }
+                        }
+
                         Console.Write("Adding extended properties...");
                         foreach (ExtendedProperty extendedProperty in database.ExtendedProperties)
                         {
@@ -248,7 +287,7 @@ namespace ssdump
                     // Output table if it was requested, or if no specific tables were requested.
                     if (Tables.Count == 0 || Tables.Contains(table.Name))
                     {
-                        Console.WriteLine($"\t{table.Name}");
+                        Console.WriteLine($"\t[{table.Schema}].[{table.Name}]");
                         urns.Add(table.Urn);
 
                         // If the "no-data" flag is set, don't include data contained in tables.
@@ -359,7 +398,7 @@ namespace ssdump
                 // Dump everything.
                 if (urns.Count > 0)
                 {
-                    Console.Write("Writing scripts...");
+                    Console.Write($"Writing scripts to {FilePath}    ...");
                     WriteScripts(scripter, urns, dataUrns, foreignKeyUrns);
                     Console.WriteLine(" done");
                 }
@@ -395,6 +434,7 @@ namespace ssdump
                 scripter.PrefetchObjects = !NoPrefetch;
                 scripter.EnumScriptWithList(urns.ToArray()); // Will write database/schemas/tables to file.
                 scripter.PrefetchObjects = true;
+                RewriteDatabaseFilePaths(tempFilename);
                 writer.CopyFrom(tempFilename);
 
                 if (!NoData && dataUrns.Count > 0)
@@ -418,6 +458,32 @@ namespace ssdump
                 writer.WriteLine(extra);
                 writer.EndBatch();
             }
+        }
+
+        /// <summary>
+        /// Swap the database file paths in a scripted CREATE DATABASE statement for the ones in databaseFilePaths.
+        /// </summary>
+        /// <param name="scriptFilePath">Schema script written by SMO (no data, so small enough to read whole)</param>
+        private void RewriteDatabaseFilePaths(string scriptFilePath)
+        {
+            if (databaseFilePaths.Count == 0)
+                return;
+
+            string script;
+            System.Text.Encoding encoding;
+            using (StreamReader reader = new(scriptFilePath, detectEncodingFromByteOrderMarks: true))
+            {
+                script = reader.ReadToEnd();
+                encoding = reader.CurrentEncoding; // Write it back the way SMO wrote it.
+            }
+
+            foreach (KeyValuePair<string, string> path in databaseFilePaths)
+            {
+                // Match the whole N'...' literal, with quotes escaped as SQL does, so only exact paths are replaced.
+                script = script.Replace("N'" + path.Key.Replace("'", "''") + "'", "N'" + path.Value.Replace("'", "''") + "'", StringComparison.OrdinalIgnoreCase);
+            }
+
+            File.WriteAllText(scriptFilePath, script, encoding);
         }
 
         /// <summary>

@@ -24,7 +24,8 @@ namespace ssdump
                 OptionSet options = new()
                 {
                     { "create-db", "Include CREATE DATABASE statement", value => processor.IncludeCreateDatabase = value != null },
-                    { "encrypt", "Use encrypted connection", value => processor.UseEncryption = value != null },
+                    { "data-dir=", "With --create-db, put data files (.mdf/.ndf) in this folder on the target server", value => processor.DataDirectory = value },
+                    { "encrypt","Use encrypted connection", value => processor.UseEncryption = value != null },
                     { "help", "Show help message", value => help = value != null },
                     { "h|host=", "Connect to host", value => processor.Host = value },
                     { "include-users", "Include CREATE USER statements", value => processor.IncludeUsers = value != null },
@@ -32,6 +33,7 @@ namespace ssdump
                     { "no-prefetch", "Don't prefetch table details in bulk; SMO loads them table by table instead (for troubleshooting)", value => processor.NoPrefetch = value != null },
                     { "include-data-schemas=", "Only include data from these schemas (comma-separated)", value => processor.IncludedDataSchemas = value },
                     { "include-data-tables=", "Only include data from these tables (comma-separated, table or schema.table)", value => processor.IncludedDataTables = value },
+                    { "log-dir=", "With --create-db, put log files (.ldf) in this folder on the target server (default: --data-dir)", value => processor.LogDirectory = value },
                     { "max-allowed-packet=", "Maximum packet length", (int value) => processor.MaxPacket = value },
                     { "max-file-size=", "With --output, split into files of at most this many MB, named name-001.sql, name-002.sql, ... (default 1536; 0 = one file)", (int value) => maxFileSizeMegabytes = value },
                     { "o|output=", "Write to this file instead of the console", value => outputPath = value },
@@ -64,6 +66,12 @@ namespace ssdump
                 if (!help && (processor.Password == null && processor.Username != null) || (processor.Password != null && processor.Username == null))
                 {
                     Console.Error.WriteLine("To use SQL Server authentication, both user and password must be provided.");
+                    help = true;
+                }
+
+                if (!help && (processor.DataDirectory != null || processor.LogDirectory != null) && !processor.IncludeCreateDatabase)
+                {
+                    Console.Error.WriteLine("--data-dir and --log-dir only apply with --create-db.");
                     help = true;
                 }
 
