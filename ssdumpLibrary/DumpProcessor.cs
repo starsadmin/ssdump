@@ -60,9 +60,9 @@ namespace ssdump
         public string LogDirectory { get; set; }
 
         /// <summary>
-        /// Original database file path to new path, for rewriting the CREATE DATABASE statement (see RewriteDatabaseFilePaths).
+        /// ON PRIMARY / LOG ON clauses for --data-dir and --log-dir, added to the CREATE DATABASE statement (see EditCreateDatabase).
         /// </summary>
-        private Dictionary<string, string> databaseFilePaths = [];
+        private string databaseFileClauses;
 
         /// <summary>
         /// Skip prefetching table details, both up front and inside the scripter, so SMO loads them object by object instead.
@@ -147,7 +147,7 @@ namespace ssdump
             // Connect.
             server.ConnectionContext.Connect();
 
-            Console.WriteLine($"Opened connection to [{Host}].[{DatabaseName}]");
+            PrintIfNoOutput($"Opened connection to [{Host}].[{DatabaseName}]");
             if (server.ConnectionContext.IsOpen)
             {
                 // Without VIEW DEFINITION, the server hides object definitions (defaults, views, procedures, etc.) and SMO
@@ -178,6 +178,11 @@ namespace ssdump
                 scripter.Options.ScriptData = false;
                 scripter.Options.ScriptOwner = false;
 
+                // Leave out the source database's files, sizes and filegroups, so CREATE DATABASE starts at the target server's
+                // default size instead of reserving the full source size. This also drops ON [filegroup] from tables and indexes,
+                // so everything goes on PRIMARY (the other filegroups aren't created). See EditCreateDatabase for --data-dir/--log-dir.
+                scripter.Options.NoFileGroup = true;
+
                 Database database = server.Databases[DatabaseName];
 
                 // List of objects to dump.
@@ -191,6 +196,9 @@ namespace ssdump
                 // Foreign keys of dumped tables, written last.
                 List<Urn> foreignKeyUrns = [];
 
+                // Stored procedures (each followed by its extended properties) by "schema.name", scripted in a separate pass.
+                Dictionary<string, List<Urn>> procedureUrns = new(StringComparer.OrdinalIgnoreCase);
+
                 // If no specific tables were requested, write out database info.
                 if (Tables.Count == 0)
                 {
@@ -198,40 +206,43 @@ namespace ssdump
                     {
                         urns.Add(database.Urn);
 
-                        // SMO has no scripting option for file locations; it copies the source database's paths.
-                        // So note each file's new path here, and WriteScripts swaps them into the script.
-                        databaseFilePaths = [];
+                        // SMO's CREATE DATABASE scripting reads the filegroups without loading them (NullReferenceException in
+                        // Database.GetAutoGrowFilesScript). Scripting the file list normally loads them first, but NoFileGroup skips that.
+                        database.FileGroups.Refresh();
+
+                        // With NoFileGroup, SMO writes no file list at all, so build one here for WriteScripts to add.
+                        // Only the main data file and one log file: everything is on PRIMARY, so extra files aren't needed.
+                        // No SIZE, so the files start at the target server's default size and grow as needed.
+                        databaseFileClauses = null;
                         string logDirectory = LogDirectory ?? DataDirectory;
                         if (DataDirectory != null)
                         {
-                            foreach (FileGroup fileGroup in database.FileGroups)
+                            foreach (DataFile dataFile in database.FileGroups["PRIMARY"].Files)
                             {
-                                foreach (DataFile dataFile in fileGroup.Files)
+                                if (dataFile.IsPrimaryFile)
                                 {
-                                    databaseFilePaths[dataFile.FileName] = Path.Combine(DataDirectory, Path.GetFileName(dataFile.FileName));
+                                    databaseFileClauses += Environment.NewLine + " ON PRIMARY" + Environment.NewLine + FileSpec(dataFile.Name, DataDirectory, dataFile.FileName);
                                 }
                             }
                         }
-                        if (logDirectory != null)
+                        if (logDirectory != null && database.LogFiles.Count > 0)
                         {
-                            foreach (LogFile logFile in database.LogFiles)
-                            {
-                                databaseFilePaths[logFile.FileName] = Path.Combine(logDirectory, Path.GetFileName(logFile.FileName));
-                            }
+                            LogFile logFile = database.LogFiles[0];
+                            databaseFileClauses += Environment.NewLine + " LOG ON" + Environment.NewLine + FileSpec(logFile.Name, logDirectory, logFile.FileName);
                         }
 
-                        Console.Write("Adding extended properties...");
+                        PrintIfNoOutput("Adding extended properties...", false);
                         foreach (ExtendedProperty extendedProperty in database.ExtendedProperties)
                         {
                             urns.Add(extendedProperty.Urn);
                         }
-                        Console.WriteLine(" done");
+                        PrintIfNoOutput(" done");
                     }
 
                     if (IncludeUsers)
                     {
                         // Also output users.
-                        Console.Write("Adding database users...");
+                        PrintIfNoOutput("Adding database users...", false);
                         foreach (User user in database.Users)
                         {
                             if (!user.IsSystemObject)
@@ -251,11 +262,11 @@ namespace ssdump
                                 }
                             }
                         }
-                        Console.WriteLine(" done");
+                        PrintIfNoOutput(" done");
                     }
 
                     // Also output schemas.
-                    Console.Write("Adding schemas...");
+                    PrintIfNoOutput("Adding schemas...", false);
                     foreach (Schema schema in database.Schemas)
                     {
                         if (!schema.IsSystemObject)
@@ -268,26 +279,26 @@ namespace ssdump
                             }
                         }
                     }
-                    Console.WriteLine(" done");
+                    PrintIfNoOutput(" done");
                 }
 
                 // When dumping every table, load their columns, indexes, keys, triggers etc. in a few queries,
                 // instead of SMO querying the server separately for each table.
                 if (Tables.Count == 0 && !NoPrefetch)
                 {
-                    Console.Write("Prefetching every table's colunms, indices, keys, triggers, etc...");
+                    PrintIfNoOutput("Prefetching every table's colunms, indices, keys, triggers, etc...", false);
                     database.PrefetchObjects(typeof(Table), scripter.Options);
-                    Console.WriteLine(" done");
+                    PrintIfNoOutput(" done");
                 }
 
                 // Loop through tables.
-                Console.WriteLine("Adding prefetched tables, columns, indices, keys, trigggers, and extended properties...");
+                PrintIfNoOutput("Adding prefetched tables, columns, indices, keys, trigggers, and extended properties...");
                 foreach (Table table in database.Tables)
                 {
                     // Output table if it was requested, or if no specific tables were requested.
                     if (Tables.Count == 0 || Tables.Contains(table.Name))
                     {
-                        Console.WriteLine($"\t[{table.Schema}].[{table.Name}]");
+                        PrintIfNoOutput($"\t[{table.Schema}].[{table.Name}]");
                         urns.Add(table.Urn);
 
                         // If the "no-data" flag is set, don't include data contained in tables.
@@ -341,7 +352,7 @@ namespace ssdump
                 }
 
                 // Loop through views.
-                Console.Write("Adding database views...");
+                PrintIfNoOutput("Adding database views...", false);
                 foreach (View view in database.Views)
                 {
                     // Output view if it was requested, or if no specific views were requested.
@@ -358,28 +369,31 @@ namespace ssdump
                         }
                     }
                 }
-                Console.WriteLine(" done");
+                PrintIfNoOutput(" done");
 
                 // Don't forget stored procedures.
                 if (Tables.Count == 0)
                 {
-                    Console.Write("Adding stored procedures...");
+                    PrintIfNoOutput("Adding stored procedures...", false);
                     foreach (StoredProcedure storedProcedure in database.StoredProcedures)
                     {
                         if (!storedProcedure.IsSystemObject)
                         {
-                            urns.Add(storedProcedure.Urn);
+                            // SMO doesn't order procedures by dependency, so they're kept out of urns (see WriteProcedureScripts).
+                            List<Urn> procedureAndProperties = [storedProcedure.Urn];
 
                             foreach (ExtendedProperty extendedProperty in storedProcedure.ExtendedProperties)
                             {
-                                urns.Add(extendedProperty.Urn);
+                                procedureAndProperties.Add(extendedProperty.Urn);
                             }
+
+                            procedureUrns[ObjectKey(storedProcedure.Urn)] = procedureAndProperties;
                         }
                     }
-                    Console.WriteLine(" done");
+                    PrintIfNoOutput(" done");
 
                     // Views can call functions, so they must be scripted too.
-                    Console.Write("Adding user-defined functions...");
+                    PrintIfNoOutput("Adding user-defined functions...", false);
                     foreach (UserDefinedFunction userDefinedFunction in database.UserDefinedFunctions)
                     {
                         if (!userDefinedFunction.IsSystemObject)
@@ -392,15 +406,15 @@ namespace ssdump
                             }
                         }
                     }
-                    Console.WriteLine(" done");
+                    PrintIfNoOutput(" done");
                 }
 
                 // Dump everything.
                 if (urns.Count > 0)
                 {
-                    Console.Write($"Writing scripts to {FilePath}    ...");
-                    WriteScripts(scripter, urns, dataUrns, foreignKeyUrns);
-                    Console.WriteLine(" done");
+                    PrintIfNoOutput($"Writing scripts to {FilePath}    ...", false);
+                    WriteScripts(scripter, urns, procedureUrns, dataUrns, foreignKeyUrns);
+                    PrintIfNoOutput(" done");
                 }
             }
             else
@@ -415,11 +429,20 @@ namespace ssdump
         /// </summary>
         /// <param name="scripter">Scripter object with options to write scripts</param>
         /// <param name="urns">List of objects to write out</param>
+        /// <param name="procedureUrns">Stored procedures (and their extended properties) to write after the other objects</param>
         /// <param name="dataUrns">Tables to write data for</param>
         /// <param name="foreignKeyUrns">Foreign keys to write after the data</param>
-        private void WriteScripts(Scripter scripter, List<Urn> urns, List<Urn> dataUrns, List<Urn> foreignKeyUrns)
+        private void WriteScripts(Scripter scripter, List<Urn> urns, Dictionary<string, List<Urn>> procedureUrns, List<Urn> dataUrns, List<Urn> foreignKeyUrns)
         {
             using ScriptFileWriter writer = WriteToConsole ? new(Console.Out) : new(FilePath, MaxFileSize);
+
+            // The first file switches to the new database after creating it (see EditCreateDatabase); later files
+            // start on a fresh connection, so they switch too. Without --create-db, no USE is written anywhere,
+            // so the script can still be run against a database with a different name (e.g. sqlcmd -d).
+            if (CreatesDatabase)
+            {
+                writer.FileStartStatement = UseDatabaseStatement;
+            }
 
             // https://connect.microsoft.com/SQLServer/feedback/details/363076/smo-create-procedure-generated-script-is-unusable
             // You must write to file in order to get "GO" statements to appear.
@@ -433,9 +456,14 @@ namespace ssdump
                 // Only turned off for this schema pass: with it off, SMO's data scripting queries tables from the wrong database.
                 scripter.PrefetchObjects = !NoPrefetch;
                 scripter.EnumScriptWithList(urns.ToArray()); // Will write database/schemas/tables to file.
-                scripter.PrefetchObjects = true;
-                RewriteDatabaseFilePaths(tempFilename);
+                EditCreateDatabase(tempFilename);
                 writer.CopyFrom(tempFilename);
+
+                if (procedureUrns.Count > 0)
+                {
+                    WriteProcedureScripts(scripter, procedureUrns, writer); // Writes procedures after the tables, views and functions they use.
+                }
+                scripter.PrefetchObjects = true;
 
                 if (!NoData && dataUrns.Count > 0)
                 {
@@ -461,12 +489,13 @@ namespace ssdump
         }
 
         /// <summary>
-        /// Swap the database file paths in a scripted CREATE DATABASE statement for the ones in databaseFilePaths.
+        /// Add databaseFileClauses to the scripted CREATE DATABASE statement, which has no file list because of NoFileGroup,
+        /// and switch to the new database after it.
         /// </summary>
         /// <param name="scriptFilePath">Schema script written by SMO (no data, so small enough to read whole)</param>
-        private void RewriteDatabaseFilePaths(string scriptFilePath)
+        private void EditCreateDatabase(string scriptFilePath)
         {
-            if (databaseFilePaths.Count == 0)
+            if (!CreatesDatabase)
                 return;
 
             string script;
@@ -477,13 +506,94 @@ namespace ssdump
                 encoding = reader.CurrentEncoding; // Write it back the way SMO wrote it.
             }
 
-            foreach (KeyValuePair<string, string> path in databaseFilePaths)
+            // The file list goes after the name and CONTAINMENT, and before COLLATE and WITH, as CREATE DATABASE requires.
+            // The name is [bracketed], with any ] inside it doubled.
+            Match createDatabase = Regex.Match(script, @"^CREATE DATABASE \[(?:[^\]]|\]\])*\](\s+CONTAINMENT\s*=\s*\w+)?", RegexOptions.Multiline | RegexOptions.IgnoreCase);
+            if (!createDatabase.Success)
             {
-                // Match the whole N'...' literal, with quotes escaped as SQL does, so only exact paths are replaced.
-                script = script.Replace("N'" + path.Key.Replace("'", "''") + "'", "N'" + path.Value.Replace("'", "''") + "'", StringComparison.OrdinalIgnoreCase);
+                Console.Error.WriteLine("Warning: couldn't find the CREATE DATABASE statement, so no USE statement was added, and --data-dir and --log-dir weren't applied.");
+                return;
             }
 
+            // SMO doesn't switch to the new database, so without this everything after CREATE DATABASE
+            // would be created in whatever database the connection started in (often master).
+            // It goes after the GO that ends the CREATE DATABASE batch; the ALTER DATABASE statements after it name the database anyway.
+            Match batchEnd = new Regex(@"^GO\r?\n", RegexOptions.Multiline).Match(script, createDatabase.Index);
+            if (batchEnd.Success)
+            {
+                script = script.Insert(batchEnd.Index + batchEnd.Length, UseDatabaseStatement + Environment.NewLine + "GO" + Environment.NewLine);
+            }
+            else
+            {
+                Console.Error.WriteLine("Warning: couldn't find the end of the CREATE DATABASE statement, so no USE statement was added.");
+            }
+
+            // Done after the USE, which is further down the script, so its position isn't shifted by this.
+            if (databaseFileClauses != null)
+            {
+                script = script.Insert(createDatabase.Index + createDatabase.Length, databaseFileClauses);
+            }
             File.WriteAllText(scriptFilePath, script, encoding);
+        }
+
+        /// <summary>
+        /// "( NAME = N'...', FILENAME = N'...' )" for a database file, moved to the given folder but keeping its file name.
+        /// </summary>
+        private static string FileSpec(string logicalName, string directory, string originalPath)
+        {
+            string path = Path.Combine(directory, Path.GetFileName(originalPath));
+            return string.Format("( NAME = N'{0}', FILENAME = N'{1}' )", logicalName.Replace("'", "''"), path.Replace("'", "''"));
+        }
+
+        /// <summary>
+        /// Write CREATE PROCEDURE statements, with procedures that others call written before their callers.
+        /// </summary>
+        /// <param name="scripter">Scripter object already set up with a file name</param>
+        /// <param name="procedureUrns">Procedures by "schema.name", each list being the procedure then its extended properties</param>
+        /// <param name="writer">Where to write the statements</param>
+        private static void WriteProcedureScripts(Scripter scripter, Dictionary<string, List<Urn>> procedureUrns, ScriptFileWriter writer)
+        {
+            List<Urn> procedures = [];
+            foreach (List<Urn> procedureAndProperties in procedureUrns.Values)
+            {
+                procedures.Add(procedureAndProperties[0]);
+            }
+
+            // SMO only sorts schema-bound procedures, and writes the rest in the order given, so sort them here.
+            // The walk also returns the tables, views, etc. the procedures use, which were already written; those are skipped.
+            // Calls made through dynamic SQL, or to procedures that were missing when the caller was created, aren't
+            // recorded by SQL Server as dependencies, so those callers can still come first (SQL Server only warns about that).
+            DependencyTree tree = scripter.DiscoverDependencies(procedures.ToArray(), DependencyType.Parents);
+            DependencyCollection dependencies = scripter.WalkDependencies(tree);
+
+            List<string> orderedKeys = [];
+            HashSet<string> seen = new(StringComparer.OrdinalIgnoreCase);
+            foreach (DependencyCollectionNode node in dependencies)
+            {
+                string key = ObjectKey(node.Urn);
+                if (node.Urn.Type == "StoredProcedure" && procedureUrns.ContainsKey(key) && seen.Add(key))
+                {
+                    orderedKeys.Add(key);
+                }
+            }
+
+            // Shouldn't happen, but don't drop a procedure if the walk misses it.
+            foreach (string key in procedureUrns.Keys)
+            {
+                if (seen.Add(key))
+                {
+                    orderedKeys.Add(key);
+                }
+            }
+
+            // One procedure at a time, overwriting the scripter's file each time, so the output follows the order above exactly.
+            scripter.Options.ToFileOnly = true;
+            scripter.Options.AppendToFile = false;
+            foreach (string key in orderedKeys)
+            {
+                scripter.EnumScriptWithList(procedureUrns[key].ToArray()); // Will write to file.
+                writer.CopyFrom(scripter.Options.FileName);
+            }
         }
 
         /// <summary>
@@ -497,7 +607,7 @@ namespace ssdump
             Dictionary<string, Urn> selected = new(StringComparer.OrdinalIgnoreCase);
             foreach (Urn urn in dataUrns)
             {
-                selected[TableKey(urn)] = urn;
+                selected[ObjectKey(urn)] = urn;
             }
 
             // The walk returns the selected tables plus every table they reference, ordered so that
@@ -511,14 +621,14 @@ namespace ssdump
                 if (node.Urn.Type != "Table")
                     continue;
 
-                if (selected.TryGetValue(TableKey(node.Urn), out Urn urn))
+                if (selected.TryGetValue(ObjectKey(node.Urn), out Urn urn))
                 {
                     orderedUrns.Add(urn);
                 }
                 else
                 {
                     // Rows in the selected tables may point at rows in this table, which won't be in the dump.
-                    Console.Error.WriteLine(string.Format("Warning: data for {0} is not included, but is referenced by included tables.", TableKey(node.Urn)));
+                    Console.Error.WriteLine(string.Format("Warning: data for {0} is not included, but is referenced by included tables.", ObjectKey(node.Urn)));
                 }
             }
 
@@ -618,11 +728,39 @@ namespace ssdump
         }
 
         /// <summary>
-        /// "schema.table" key for a table URN, used to match URNs that come from different SMO calls.
+        /// CREATE DATABASE is only scripted with --create-db and no specific tables (see Execute).
         /// </summary>
-        private static string TableKey(Urn urn)
+        private bool CreatesDatabase => IncludeCreateDatabase && Tables.Count == 0;
+
+        /// <summary>
+        /// "USE [database]", with any ] in the name doubled.
+        /// </summary>
+        private string UseDatabaseStatement => "USE [" + DatabaseName.Replace("]", "]]") + "]";
+
+        /// <summary>
+        /// "schema.name" key for a table or procedure URN, used to match URNs that come from different SMO calls.
+        /// </summary>
+        private static string ObjectKey(Urn urn)
         {
             return urn.GetAttribute("Schema") + "." + urn.GetAttribute("Name");
+        }
+
+        /// <summary>
+        /// If the user does not include an output file path, assume that they want the output to go directly to stdout, the way the Console Application was
+        /// originally designed. In these cases, we don't want to output information about what the program is doing.
+        /// </summary>
+        /// <param name="line"></param>
+        /// <param name="appendNewLine"></param>
+        /// <returns></returns>
+        private void PrintIfNoOutput(string line, bool appendNewLine = true)
+        {
+            if (string.IsNullOrEmpty(FilePath))
+                return;
+
+            if (appendNewLine)
+                Console.WriteLine(line);
+            else
+                Console.Write(line);
         }
     }
 }

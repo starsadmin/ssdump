@@ -28,6 +28,12 @@ namespace ssdump
         private string sessionEndInCurrentFile;
 
         /// <summary>
+        /// Statement written (with "GO") at the top of every numbered file after the first, e.g. "USE [db]".
+        /// Each file is run on its own connection, so connection-wide context has to be set again in each one.
+        /// </summary>
+        public string FileStartStatement { get; set; }
+
+        /// <summary>
         /// Write to an existing writer (e.g. the console), without splitting.
         /// </summary>
         public ScriptFileWriter(TextWriter writer)
@@ -173,6 +179,12 @@ namespace ssdump
             fileNumber++;
             OpenFile(NumberedFilePath(fileNumber));
             sessionEndInCurrentFile = null;
+
+            // Before the session statement, which may name a table in that database.
+            if (fileNumber > 1 && FileStartStatement != null)
+            {
+                WriteDirect(FileStartStatement + Environment.NewLine + "GO" + Environment.NewLine);
+            }
 
             if (sessionStartStatement != null)
             {
