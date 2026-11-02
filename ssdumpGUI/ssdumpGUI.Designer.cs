@@ -28,487 +28,519 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.menuStrip1 = new System.Windows.Forms.MenuStrip();
-            this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.settingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.editHostsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.lblHost = new System.Windows.Forms.Label();
-            this.cboHostList = new System.Windows.Forms.ComboBox();
-            this.lblUsername = new System.Windows.Forms.Label();
-            this.txtUsername = new System.Windows.Forms.TextBox();
-            this.txtPassword = new System.Windows.Forms.TextBox();
-            this.lblPassword = new System.Windows.Forms.Label();
-            this.ckbNoData = new System.Windows.Forms.CheckBox();
-            this.txtDatabase = new System.Windows.Forms.TextBox();
-            this.lblDatabase = new System.Windows.Forms.Label();
-            this.lblTables = new System.Windows.Forms.Label();
-            this.txtTables = new System.Windows.Forms.TextBox();
-            this.saveFileDialog1 = new System.Windows.Forms.SaveFileDialog();
-            this.btnExecute = new System.Windows.Forms.Button();
-            this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
-            this.ckbUseWinAuth = new System.Windows.Forms.CheckBox();
-            this.lblWinAuth = new System.Windows.Forms.Label();
-            this.groupBox1 = new System.Windows.Forms.GroupBox();
-            this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
-            this.lblCreateUser = new System.Windows.Forms.Label();
-            this.ckbCreateDatabase = new System.Windows.Forms.CheckBox();
-            this.lblCreateDatabase = new System.Windows.Forms.Label();
-            this.lblNoData = new System.Windows.Forms.Label();
-            this.ckbCreateUser = new System.Windows.Forms.CheckBox();
-            this.gpbConnectionSettings = new System.Windows.Forms.GroupBox();
-            this.tableLayoutPanel3 = new System.Windows.Forms.TableLayoutPanel();
-            this.lblMaxPacket = new System.Windows.Forms.Label();
-            this.txtTimeout = new System.Windows.Forms.TextBox();
-            this.lblTimeout = new System.Windows.Forms.Label();
-            this.lblEncryption = new System.Windows.Forms.Label();
-            this.ckbEncryption = new System.Windows.Forms.CheckBox();
-            this.txtMaxPacket = new System.Windows.Forms.TextBox();
-            this.lblVersion = new System.Windows.Forms.Label();
-            this.menuStrip1.SuspendLayout();
-            this.tableLayoutPanel1.SuspendLayout();
-            this.groupBox1.SuspendLayout();
-            this.tableLayoutPanel2.SuspendLayout();
-            this.gpbConnectionSettings.SuspendLayout();
-            this.tableLayoutPanel3.SuspendLayout();
-            this.SuspendLayout();
+            menuStrip1 = new System.Windows.Forms.MenuStrip();
+            fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            settingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            editHostsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            lblHost = new System.Windows.Forms.Label();
+            cboHostList = new System.Windows.Forms.ComboBox();
+            lblUsername = new System.Windows.Forms.Label();
+            txtUsername = new System.Windows.Forms.TextBox();
+            txtPassword = new System.Windows.Forms.TextBox();
+            lblPassword = new System.Windows.Forms.Label();
+            ckbNoData = new System.Windows.Forms.CheckBox();
+            txtDatabase = new System.Windows.Forms.TextBox();
+            lblDatabase = new System.Windows.Forms.Label();
+            lblTables = new System.Windows.Forms.Label();
+            txtTables = new System.Windows.Forms.TextBox();
+            saveFileDialog1 = new System.Windows.Forms.SaveFileDialog();
+            btnExecute = new System.Windows.Forms.Button();
+            tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
+            ckbUseWinAuth = new System.Windows.Forms.CheckBox();
+            lblWinAuth = new System.Windows.Forms.Label();
+            groupBox1 = new System.Windows.Forms.GroupBox();
+            tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
+            lblCreateUser = new System.Windows.Forms.Label();
+            ckbCreateDatabase = new System.Windows.Forms.CheckBox();
+            lblCreateDatabase = new System.Windows.Forms.Label();
+            lblNoData = new System.Windows.Forms.Label();
+            ckbCreateUser = new System.Windows.Forms.CheckBox();
+            gpbConnectionSettings = new System.Windows.Forms.GroupBox();
+            tableLayoutPanel3 = new System.Windows.Forms.TableLayoutPanel();
+            lblMaxPacket = new System.Windows.Forms.Label();
+            txtTimeout = new System.Windows.Forms.TextBox();
+            lblTimeout = new System.Windows.Forms.Label();
+            lblEncryption = new System.Windows.Forms.Label();
+            ckbEncryption = new System.Windows.Forms.CheckBox();
+            txtMaxPacket = new System.Windows.Forms.TextBox();
+            lblVersion = new System.Windows.Forms.Label();
+            menuStrip1.SuspendLayout();
+            tableLayoutPanel1.SuspendLayout();
+            groupBox1.SuspendLayout();
+            tableLayoutPanel2.SuspendLayout();
+            gpbConnectionSettings.SuspendLayout();
+            tableLayoutPanel3.SuspendLayout();
+            SuspendLayout();
             // 
             // menuStrip1
             // 
-            this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.fileToolStripMenuItem,
-            this.settingsToolStripMenuItem});
-            this.menuStrip1.Location = new System.Drawing.Point(0, 0);
-            this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(384, 24);
-            this.menuStrip1.TabIndex = 0;
-            this.menuStrip1.Text = "menuStrip1";
+            menuStrip1.ImageScalingSize = new System.Drawing.Size(40, 40);
+            menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] { fileToolStripMenuItem, settingsToolStripMenuItem });
+            menuStrip1.Location = new System.Drawing.Point(0, 0);
+            menuStrip1.Name = "menuStrip1";
+            menuStrip1.Padding = new System.Windows.Forms.Padding(17, 6, 0, 6);
+            menuStrip1.Size = new System.Drawing.Size(1043, 57);
+            menuStrip1.TabIndex = 0;
+            menuStrip1.Text = "menuStrip1";
             // 
             // fileToolStripMenuItem
             // 
-            this.fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.exitToolStripMenuItem});
-            this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
-            this.fileToolStripMenuItem.Size = new System.Drawing.Size(37, 20);
-            this.fileToolStripMenuItem.Text = "File";
+            fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] { exitToolStripMenuItem });
+            fileToolStripMenuItem.Name = "fileToolStripMenuItem";
+            fileToolStripMenuItem.Size = new System.Drawing.Size(87, 45);
+            fileToolStripMenuItem.Text = "File";
             // 
             // exitToolStripMenuItem
             // 
-            this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
-            this.exitToolStripMenuItem.Size = new System.Drawing.Size(92, 22);
-            this.exitToolStripMenuItem.Text = "Exit";
-            this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
+            exitToolStripMenuItem.Name = "exitToolStripMenuItem";
+            exitToolStripMenuItem.Size = new System.Drawing.Size(230, 54);
+            exitToolStripMenuItem.Text = "Exit";
+            exitToolStripMenuItem.Click += exitToolStripMenuItem_Click;
             // 
             // settingsToolStripMenuItem
             // 
-            this.settingsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.editHostsToolStripMenuItem});
-            this.settingsToolStripMenuItem.Name = "settingsToolStripMenuItem";
-            this.settingsToolStripMenuItem.Size = new System.Drawing.Size(61, 20);
-            this.settingsToolStripMenuItem.Text = "Settings";
+            settingsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] { editHostsToolStripMenuItem });
+            settingsToolStripMenuItem.Name = "settingsToolStripMenuItem";
+            settingsToolStripMenuItem.Size = new System.Drawing.Size(149, 45);
+            settingsToolStripMenuItem.Text = "Settings";
             // 
             // editHostsToolStripMenuItem
             // 
-            this.editHostsToolStripMenuItem.Name = "editHostsToolStripMenuItem";
-            this.editHostsToolStripMenuItem.Size = new System.Drawing.Size(143, 22);
-            this.editHostsToolStripMenuItem.Text = "Edit Host List";
-            this.editHostsToolStripMenuItem.Click += new System.EventHandler(this.editHostsToolStripMenuItem_Click);
+            editHostsToolStripMenuItem.Name = "editHostsToolStripMenuItem";
+            editHostsToolStripMenuItem.Size = new System.Drawing.Size(356, 54);
+            editHostsToolStripMenuItem.Text = "Edit Host List";
+            editHostsToolStripMenuItem.Click += editHostsToolStripMenuItem_Click;
             // 
             // lblHost
             // 
-            this.lblHost.Anchor = System.Windows.Forms.AnchorStyles.Left;
-            this.lblHost.AutoSize = true;
-            this.lblHost.Location = new System.Drawing.Point(3, 6);
-            this.lblHost.Name = "lblHost";
-            this.lblHost.Size = new System.Drawing.Size(32, 13);
-            this.lblHost.TabIndex = 1;
-            this.lblHost.Text = "Host:";
-            this.lblHost.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            lblHost.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            lblHost.AutoSize = true;
+            lblHost.Location = new System.Drawing.Point(8, 19);
+            lblHost.Margin = new System.Windows.Forms.Padding(8, 0, 8, 0);
+            lblHost.Name = "lblHost";
+            lblHost.Size = new System.Drawing.Size(87, 41);
+            lblHost.TabIndex = 1;
+            lblHost.Text = "Host:";
+            lblHost.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // cboHostList
             // 
-            this.cboHostList.FormattingEnabled = true;
-            this.cboHostList.Location = new System.Drawing.Point(157, 3);
-            this.cboHostList.Name = "cboHostList";
-            this.cboHostList.Size = new System.Drawing.Size(196, 21);
-            this.cboHostList.TabIndex = 1;
+            cboHostList.FormattingEnabled = true;
+            cboHostList.Location = new System.Drawing.Point(444, 9);
+            cboHostList.Margin = new System.Windows.Forms.Padding(8, 9, 8, 9);
+            cboHostList.Name = "cboHostList";
+            cboHostList.Size = new System.Drawing.Size(548, 49);
+            cboHostList.TabIndex = 1;
             // 
             // lblUsername
             // 
-            this.lblUsername.Anchor = System.Windows.Forms.AnchorStyles.Left;
-            this.lblUsername.AutoSize = true;
-            this.lblUsername.Location = new System.Drawing.Point(3, 56);
-            this.lblUsername.Name = "lblUsername";
-            this.lblUsername.Size = new System.Drawing.Size(58, 13);
-            this.lblUsername.TabIndex = 3;
-            this.lblUsername.Text = "Username:";
-            this.lblUsername.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            lblUsername.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            lblUsername.AutoSize = true;
+            lblUsername.Location = new System.Drawing.Point(8, 179);
+            lblUsername.Margin = new System.Windows.Forms.Padding(8, 0, 8, 0);
+            lblUsername.Name = "lblUsername";
+            lblUsername.Size = new System.Drawing.Size(159, 41);
+            lblUsername.TabIndex = 3;
+            lblUsername.Text = "Username:";
+            lblUsername.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // txtUsername
             // 
-            this.txtUsername.Location = new System.Drawing.Point(157, 53);
-            this.txtUsername.Name = "txtUsername";
-            this.txtUsername.Size = new System.Drawing.Size(196, 20);
-            this.txtUsername.TabIndex = 3;
+            txtUsername.Location = new System.Drawing.Point(444, 169);
+            txtUsername.Margin = new System.Windows.Forms.Padding(8, 9, 8, 9);
+            txtUsername.Name = "txtUsername";
+            txtUsername.Size = new System.Drawing.Size(548, 47);
+            txtUsername.TabIndex = 3;
             // 
             // txtPassword
             // 
-            this.txtPassword.Location = new System.Drawing.Point(157, 78);
-            this.txtPassword.Name = "txtPassword";
-            this.txtPassword.PasswordChar = '*';
-            this.txtPassword.Size = new System.Drawing.Size(196, 20);
-            this.txtPassword.TabIndex = 4;
+            txtPassword.Location = new System.Drawing.Point(444, 249);
+            txtPassword.Margin = new System.Windows.Forms.Padding(8, 9, 8, 9);
+            txtPassword.Name = "txtPassword";
+            txtPassword.PasswordChar = '*';
+            txtPassword.Size = new System.Drawing.Size(548, 47);
+            txtPassword.TabIndex = 4;
             // 
             // lblPassword
             // 
-            this.lblPassword.Anchor = System.Windows.Forms.AnchorStyles.Left;
-            this.lblPassword.AutoSize = true;
-            this.lblPassword.Location = new System.Drawing.Point(3, 81);
-            this.lblPassword.Name = "lblPassword";
-            this.lblPassword.Size = new System.Drawing.Size(56, 13);
-            this.lblPassword.TabIndex = 4;
-            this.lblPassword.Text = "Password:";
-            this.lblPassword.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            lblPassword.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            lblPassword.AutoSize = true;
+            lblPassword.Location = new System.Drawing.Point(8, 259);
+            lblPassword.Margin = new System.Windows.Forms.Padding(8, 0, 8, 0);
+            lblPassword.Name = "lblPassword";
+            lblPassword.Size = new System.Drawing.Size(150, 41);
+            lblPassword.TabIndex = 4;
+            lblPassword.Text = "Password:";
+            lblPassword.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // ckbNoData
             // 
-            this.ckbNoData.AutoSize = true;
-            this.ckbNoData.BackColor = System.Drawing.SystemColors.Control;
-            this.ckbNoData.CheckAlign = System.Drawing.ContentAlignment.MiddleRight;
-            this.ckbNoData.Dock = System.Windows.Forms.DockStyle.Left;
-            this.ckbNoData.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.ckbNoData.Location = new System.Drawing.Point(282, 3);
-            this.ckbNoData.Name = "ckbNoData";
-            this.ckbNoData.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
-            this.ckbNoData.Size = new System.Drawing.Size(29, 17);
-            this.ckbNoData.TabIndex = 0;
-            this.ckbNoData.Text = " ";
-            this.ckbNoData.UseVisualStyleBackColor = false;
+            ckbNoData.AutoSize = true;
+            ckbNoData.BackColor = System.Drawing.SystemColors.Control;
+            ckbNoData.CheckAlign = System.Drawing.ContentAlignment.MiddleRight;
+            ckbNoData.Dock = System.Windows.Forms.DockStyle.Left;
+            ckbNoData.ForeColor = System.Drawing.SystemColors.ControlText;
+            ckbNoData.Location = new System.Drawing.Point(801, 9);
+            ckbNoData.Margin = new System.Windows.Forms.Padding(8, 9, 8, 9);
+            ckbNoData.Name = "ckbNoData";
+            ckbNoData.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
+            ckbNoData.Size = new System.Drawing.Size(64, 55);
+            ckbNoData.TabIndex = 0;
+            ckbNoData.Text = " ";
+            ckbNoData.UseVisualStyleBackColor = false;
             // 
             // txtDatabase
             // 
-            this.txtDatabase.Location = new System.Drawing.Point(157, 103);
-            this.txtDatabase.Name = "txtDatabase";
-            this.txtDatabase.Size = new System.Drawing.Size(196, 20);
-            this.txtDatabase.TabIndex = 5;
+            txtDatabase.Location = new System.Drawing.Point(444, 329);
+            txtDatabase.Margin = new System.Windows.Forms.Padding(8, 9, 8, 9);
+            txtDatabase.Name = "txtDatabase";
+            txtDatabase.Size = new System.Drawing.Size(548, 47);
+            txtDatabase.TabIndex = 5;
             // 
             // lblDatabase
             // 
-            this.lblDatabase.Anchor = System.Windows.Forms.AnchorStyles.Left;
-            this.lblDatabase.AutoSize = true;
-            this.lblDatabase.Location = new System.Drawing.Point(3, 107);
-            this.lblDatabase.Name = "lblDatabase";
-            this.lblDatabase.Size = new System.Drawing.Size(87, 13);
-            this.lblDatabase.TabIndex = 5;
-            this.lblDatabase.Text = "Database Name:";
-            this.lblDatabase.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            lblDatabase.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            lblDatabase.AutoSize = true;
+            lblDatabase.Location = new System.Drawing.Point(8, 341);
+            lblDatabase.Margin = new System.Windows.Forms.Padding(8, 0, 8, 0);
+            lblDatabase.Name = "lblDatabase";
+            lblDatabase.Size = new System.Drawing.Size(235, 41);
+            lblDatabase.TabIndex = 5;
+            lblDatabase.Text = "Database Name:";
+            lblDatabase.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // lblTables
             // 
-            this.lblTables.AutoSize = true;
-            this.lblTables.Location = new System.Drawing.Point(15, 174);
-            this.lblTables.Name = "lblTables";
-            this.lblTables.Size = new System.Drawing.Size(106, 13);
-            this.lblTables.TabIndex = 6;
-            this.lblTables.Text = "Tables (one per line):";
+            lblTables.AutoSize = true;
+            lblTables.Location = new System.Drawing.Point(42, 549);
+            lblTables.Margin = new System.Windows.Forms.Padding(8, 0, 8, 0);
+            lblTables.Name = "lblTables";
+            lblTables.Size = new System.Drawing.Size(400, 41);
+            lblTables.TabIndex = 6;
+            lblTables.Text = "Table schemas (one per line):";
             // 
             // txtTables
             // 
-            this.txtTables.Location = new System.Drawing.Point(18, 190);
-            this.txtTables.Multiline = true;
-            this.txtTables.Name = "txtTables";
-            this.txtTables.Size = new System.Drawing.Size(347, 76);
-            this.txtTables.TabIndex = 1;
+            txtTables.Location = new System.Drawing.Point(51, 599);
+            txtTables.Margin = new System.Windows.Forms.Padding(8, 9, 8, 9);
+            txtTables.Multiline = true;
+            txtTables.Name = "txtTables";
+            txtTables.Size = new System.Drawing.Size(976, 231);
+            txtTables.TabIndex = 1;
             // 
             // btnExecute
             // 
-            this.btnExecute.Location = new System.Drawing.Point(149, 498);
-            this.btnExecute.Name = "btnExecute";
-            this.btnExecute.Size = new System.Drawing.Size(216, 23);
-            this.btnExecute.TabIndex = 4;
-            this.btnExecute.Text = "Save SQL Server Dump to a File...";
-            this.btnExecute.UseVisualStyleBackColor = true;
-            this.btnExecute.Click += new System.EventHandler(this.btnExecute_Click);
+            btnExecute.Location = new System.Drawing.Point(422, 1571);
+            btnExecute.Margin = new System.Windows.Forms.Padding(8, 9, 8, 9);
+            btnExecute.Name = "btnExecute";
+            btnExecute.Size = new System.Drawing.Size(612, 73);
+            btnExecute.TabIndex = 4;
+            btnExecute.Text = "Save SQL Server Dump to a File...";
+            btnExecute.UseVisualStyleBackColor = true;
+            btnExecute.Click += btnExecute_Click;
             // 
             // tableLayoutPanel1
             // 
-            this.tableLayoutPanel1.ColumnCount = 2;
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 42.77778F));
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 57.22222F));
-            this.tableLayoutPanel1.Controls.Add(this.ckbUseWinAuth, 1, 1);
-            this.tableLayoutPanel1.Controls.Add(this.lblWinAuth, 0, 1);
-            this.tableLayoutPanel1.Controls.Add(this.txtPassword, 1, 3);
-            this.tableLayoutPanel1.Controls.Add(this.lblPassword, 0, 3);
-            this.tableLayoutPanel1.Controls.Add(this.cboHostList, 1, 0);
-            this.tableLayoutPanel1.Controls.Add(this.lblHost, 0, 0);
-            this.tableLayoutPanel1.Controls.Add(this.lblUsername, 0, 2);
-            this.tableLayoutPanel1.Controls.Add(this.txtUsername, 1, 2);
-            this.tableLayoutPanel1.Controls.Add(this.txtDatabase, 1, 4);
-            this.tableLayoutPanel1.Controls.Add(this.lblDatabase, 0, 4);
-            this.tableLayoutPanel1.Location = new System.Drawing.Point(12, 37);
-            this.tableLayoutPanel1.Name = "tableLayoutPanel1";
-            this.tableLayoutPanel1.RowCount = 5;
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 20F));
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 20F));
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 20F));
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 20F));
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 20F));
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(360, 128);
-            this.tableLayoutPanel1.TabIndex = 0;
+            tableLayoutPanel1.ColumnCount = 2;
+            tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 42.77778F));
+            tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 57.22222F));
+            tableLayoutPanel1.Controls.Add(ckbUseWinAuth, 1, 1);
+            tableLayoutPanel1.Controls.Add(lblWinAuth, 0, 1);
+            tableLayoutPanel1.Controls.Add(txtPassword, 1, 3);
+            tableLayoutPanel1.Controls.Add(lblPassword, 0, 3);
+            tableLayoutPanel1.Controls.Add(cboHostList, 1, 0);
+            tableLayoutPanel1.Controls.Add(lblHost, 0, 0);
+            tableLayoutPanel1.Controls.Add(lblUsername, 0, 2);
+            tableLayoutPanel1.Controls.Add(txtUsername, 1, 2);
+            tableLayoutPanel1.Controls.Add(txtDatabase, 1, 4);
+            tableLayoutPanel1.Controls.Add(lblDatabase, 0, 4);
+            tableLayoutPanel1.Location = new System.Drawing.Point(34, 117);
+            tableLayoutPanel1.Margin = new System.Windows.Forms.Padding(8, 9, 8, 9);
+            tableLayoutPanel1.Name = "tableLayoutPanel1";
+            tableLayoutPanel1.RowCount = 5;
+            tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 20F));
+            tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 20F));
+            tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 20F));
+            tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 20F));
+            tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 20F));
+            tableLayoutPanel1.Size = new System.Drawing.Size(1020, 404);
+            tableLayoutPanel1.TabIndex = 0;
             // 
             // ckbUseWinAuth
             // 
-            this.ckbUseWinAuth.Anchor = System.Windows.Forms.AnchorStyles.Left;
-            this.ckbUseWinAuth.AutoSize = true;
-            this.ckbUseWinAuth.CheckAlign = System.Drawing.ContentAlignment.MiddleRight;
-            this.ckbUseWinAuth.Checked = true;
-            this.ckbUseWinAuth.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.ckbUseWinAuth.Location = new System.Drawing.Point(157, 29);
-            this.ckbUseWinAuth.Name = "ckbUseWinAuth";
-            this.ckbUseWinAuth.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
-            this.ckbUseWinAuth.Size = new System.Drawing.Size(29, 17);
-            this.ckbUseWinAuth.TabIndex = 2;
-            this.ckbUseWinAuth.Text = " ";
-            this.ckbUseWinAuth.UseVisualStyleBackColor = true;
-            this.ckbUseWinAuth.CheckedChanged += new System.EventHandler(this.ckbUseWinAuth_CheckedChanged);
+            ckbUseWinAuth.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            ckbUseWinAuth.AutoSize = true;
+            ckbUseWinAuth.CheckAlign = System.Drawing.ContentAlignment.MiddleRight;
+            ckbUseWinAuth.Checked = true;
+            ckbUseWinAuth.CheckState = System.Windows.Forms.CheckState.Checked;
+            ckbUseWinAuth.Location = new System.Drawing.Point(444, 97);
+            ckbUseWinAuth.Margin = new System.Windows.Forms.Padding(8, 9, 8, 9);
+            ckbUseWinAuth.Name = "ckbUseWinAuth";
+            ckbUseWinAuth.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
+            ckbUseWinAuth.Size = new System.Drawing.Size(64, 45);
+            ckbUseWinAuth.TabIndex = 2;
+            ckbUseWinAuth.Text = " ";
+            ckbUseWinAuth.UseVisualStyleBackColor = true;
+            ckbUseWinAuth.CheckedChanged += ckbUseWinAuth_CheckedChanged;
             // 
             // lblWinAuth
             // 
-            this.lblWinAuth.Anchor = System.Windows.Forms.AnchorStyles.Left;
-            this.lblWinAuth.AutoSize = true;
-            this.lblWinAuth.Location = new System.Drawing.Point(3, 31);
-            this.lblWinAuth.Name = "lblWinAuth";
-            this.lblWinAuth.Size = new System.Drawing.Size(147, 13);
-            this.lblWinAuth.TabIndex = 2;
-            this.lblWinAuth.Text = "Use Windows Authentication:";
-            this.lblWinAuth.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            lblWinAuth.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            lblWinAuth.AutoSize = true;
+            lblWinAuth.Location = new System.Drawing.Point(8, 99);
+            lblWinAuth.Margin = new System.Windows.Forms.Padding(8, 0, 8, 0);
+            lblWinAuth.Name = "lblWinAuth";
+            lblWinAuth.Size = new System.Drawing.Size(408, 41);
+            lblWinAuth.TabIndex = 2;
+            lblWinAuth.Text = "Use Windows Authentication:";
+            lblWinAuth.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // groupBox1
             // 
-            this.groupBox1.Controls.Add(this.tableLayoutPanel2);
-            this.groupBox1.Location = new System.Drawing.Point(18, 279);
-            this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(347, 100);
-            this.groupBox1.TabIndex = 2;
-            this.groupBox1.TabStop = false;
-            this.groupBox1.Text = "Options";
+            groupBox1.Controls.Add(tableLayoutPanel2);
+            groupBox1.Location = new System.Drawing.Point(51, 880);
+            groupBox1.Margin = new System.Windows.Forms.Padding(8, 9, 8, 9);
+            groupBox1.Name = "groupBox1";
+            groupBox1.Padding = new System.Windows.Forms.Padding(8, 9, 8, 9);
+            groupBox1.Size = new System.Drawing.Size(983, 315);
+            groupBox1.TabIndex = 2;
+            groupBox1.TabStop = false;
+            groupBox1.Text = "Options";
             // 
             // tableLayoutPanel2
             // 
-            this.tableLayoutPanel2.ColumnCount = 2;
-            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 83.57349F));
-            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 16.42651F));
-            this.tableLayoutPanel2.Controls.Add(this.lblCreateUser, 0, 2);
-            this.tableLayoutPanel2.Controls.Add(this.ckbCreateDatabase, 1, 1);
-            this.tableLayoutPanel2.Controls.Add(this.lblCreateDatabase, 0, 1);
-            this.tableLayoutPanel2.Controls.Add(this.ckbNoData, 1, 0);
-            this.tableLayoutPanel2.Controls.Add(this.lblNoData, 0, 0);
-            this.tableLayoutPanel2.Controls.Add(this.ckbCreateUser, 1, 2);
-            this.tableLayoutPanel2.Location = new System.Drawing.Point(6, 19);
-            this.tableLayoutPanel2.Name = "tableLayoutPanel2";
-            this.tableLayoutPanel2.RowCount = 3;
-            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 33.33333F));
-            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 33.33333F));
-            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 33.33333F));
-            this.tableLayoutPanel2.Size = new System.Drawing.Size(335, 70);
-            this.tableLayoutPanel2.TabIndex = 0;
+            tableLayoutPanel2.ColumnCount = 2;
+            tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 83.57349F));
+            tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 16.42651F));
+            tableLayoutPanel2.Controls.Add(lblCreateUser, 0, 2);
+            tableLayoutPanel2.Controls.Add(ckbCreateDatabase, 1, 1);
+            tableLayoutPanel2.Controls.Add(lblCreateDatabase, 0, 1);
+            tableLayoutPanel2.Controls.Add(ckbNoData, 1, 0);
+            tableLayoutPanel2.Controls.Add(lblNoData, 0, 0);
+            tableLayoutPanel2.Controls.Add(ckbCreateUser, 1, 2);
+            tableLayoutPanel2.Location = new System.Drawing.Point(17, 60);
+            tableLayoutPanel2.Margin = new System.Windows.Forms.Padding(8, 9, 8, 9);
+            tableLayoutPanel2.Name = "tableLayoutPanel2";
+            tableLayoutPanel2.RowCount = 3;
+            tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 33.33333F));
+            tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 33.33333F));
+            tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 33.33333F));
+            tableLayoutPanel2.Size = new System.Drawing.Size(949, 221);
+            tableLayoutPanel2.TabIndex = 0;
             // 
             // lblCreateUser
             // 
-            this.lblCreateUser.Anchor = System.Windows.Forms.AnchorStyles.Left;
-            this.lblCreateUser.AutoSize = true;
-            this.lblCreateUser.Location = new System.Drawing.Point(3, 51);
-            this.lblCreateUser.Name = "lblCreateUser";
-            this.lblCreateUser.Size = new System.Drawing.Size(178, 13);
-            this.lblCreateUser.TabIndex = 12;
-            this.lblCreateUser.Text = "Include CREATE USER statements:";
-            this.lblCreateUser.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            lblCreateUser.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            lblCreateUser.AutoSize = true;
+            lblCreateUser.Location = new System.Drawing.Point(8, 163);
+            lblCreateUser.Margin = new System.Windows.Forms.Padding(8, 0, 8, 0);
+            lblCreateUser.Name = "lblCreateUser";
+            lblCreateUser.Size = new System.Drawing.Size(462, 41);
+            lblCreateUser.TabIndex = 12;
+            lblCreateUser.Text = "Include CREATE USER statements:";
+            lblCreateUser.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // ckbCreateDatabase
             // 
-            this.ckbCreateDatabase.AutoSize = true;
-            this.ckbCreateDatabase.CheckAlign = System.Drawing.ContentAlignment.MiddleRight;
-            this.ckbCreateDatabase.Dock = System.Windows.Forms.DockStyle.Left;
-            this.ckbCreateDatabase.Location = new System.Drawing.Point(282, 26);
-            this.ckbCreateDatabase.Name = "ckbCreateDatabase";
-            this.ckbCreateDatabase.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
-            this.ckbCreateDatabase.Size = new System.Drawing.Size(29, 17);
-            this.ckbCreateDatabase.TabIndex = 1;
-            this.ckbCreateDatabase.Text = " ";
-            this.ckbCreateDatabase.UseVisualStyleBackColor = true;
+            ckbCreateDatabase.AutoSize = true;
+            ckbCreateDatabase.CheckAlign = System.Drawing.ContentAlignment.MiddleRight;
+            ckbCreateDatabase.Dock = System.Windows.Forms.DockStyle.Left;
+            ckbCreateDatabase.Location = new System.Drawing.Point(801, 82);
+            ckbCreateDatabase.Margin = new System.Windows.Forms.Padding(8, 9, 8, 9);
+            ckbCreateDatabase.Name = "ckbCreateDatabase";
+            ckbCreateDatabase.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
+            ckbCreateDatabase.Size = new System.Drawing.Size(64, 55);
+            ckbCreateDatabase.TabIndex = 1;
+            ckbCreateDatabase.Text = " ";
+            ckbCreateDatabase.UseVisualStyleBackColor = true;
             // 
             // lblCreateDatabase
             // 
-            this.lblCreateDatabase.Anchor = System.Windows.Forms.AnchorStyles.Left;
-            this.lblCreateDatabase.AutoSize = true;
-            this.lblCreateDatabase.Location = new System.Drawing.Point(3, 28);
-            this.lblCreateDatabase.Name = "lblCreateDatabase";
-            this.lblCreateDatabase.Size = new System.Drawing.Size(205, 13);
-            this.lblCreateDatabase.TabIndex = 10;
-            this.lblCreateDatabase.Text = "Include CREATE DATABASE statements:";
-            this.lblCreateDatabase.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            lblCreateDatabase.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            lblCreateDatabase.AutoSize = true;
+            lblCreateDatabase.Location = new System.Drawing.Point(8, 89);
+            lblCreateDatabase.Margin = new System.Windows.Forms.Padding(8, 0, 8, 0);
+            lblCreateDatabase.Name = "lblCreateDatabase";
+            lblCreateDatabase.Size = new System.Drawing.Size(529, 41);
+            lblCreateDatabase.TabIndex = 10;
+            lblCreateDatabase.Text = "Include CREATE DATABASE statements:";
+            lblCreateDatabase.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // lblNoData
             // 
-            this.lblNoData.Anchor = System.Windows.Forms.AnchorStyles.Left;
-            this.lblNoData.AutoSize = true;
-            this.lblNoData.Location = new System.Drawing.Point(3, 5);
-            this.lblNoData.Name = "lblNoData";
-            this.lblNoData.Size = new System.Drawing.Size(119, 13);
-            this.lblNoData.TabIndex = 9;
-            this.lblNoData.Text = "Schema Only (No Data)";
-            this.lblNoData.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            lblNoData.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            lblNoData.AutoSize = true;
+            lblNoData.Location = new System.Drawing.Point(8, 16);
+            lblNoData.Margin = new System.Windows.Forms.Padding(8, 0, 8, 0);
+            lblNoData.Name = "lblNoData";
+            lblNoData.Size = new System.Drawing.Size(327, 41);
+            lblNoData.TabIndex = 9;
+            lblNoData.Text = "Schema Only (No Data)";
+            lblNoData.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // ckbCreateUser
             // 
-            this.ckbCreateUser.AutoSize = true;
-            this.ckbCreateUser.CheckAlign = System.Drawing.ContentAlignment.MiddleRight;
-            this.ckbCreateUser.Dock = System.Windows.Forms.DockStyle.Left;
-            this.ckbCreateUser.Location = new System.Drawing.Point(282, 49);
-            this.ckbCreateUser.Name = "ckbCreateUser";
-            this.ckbCreateUser.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
-            this.ckbCreateUser.Size = new System.Drawing.Size(29, 18);
-            this.ckbCreateUser.TabIndex = 2;
-            this.ckbCreateUser.Text = " ";
-            this.ckbCreateUser.UseVisualStyleBackColor = true;
+            ckbCreateUser.AutoSize = true;
+            ckbCreateUser.CheckAlign = System.Drawing.ContentAlignment.MiddleRight;
+            ckbCreateUser.Dock = System.Windows.Forms.DockStyle.Left;
+            ckbCreateUser.Location = new System.Drawing.Point(801, 155);
+            ckbCreateUser.Margin = new System.Windows.Forms.Padding(8, 9, 8, 9);
+            ckbCreateUser.Name = "ckbCreateUser";
+            ckbCreateUser.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
+            ckbCreateUser.Size = new System.Drawing.Size(64, 57);
+            ckbCreateUser.TabIndex = 2;
+            ckbCreateUser.Text = " ";
+            ckbCreateUser.UseVisualStyleBackColor = true;
             // 
             // gpbConnectionSettings
             // 
-            this.gpbConnectionSettings.Controls.Add(this.tableLayoutPanel3);
-            this.gpbConnectionSettings.Location = new System.Drawing.Point(18, 385);
-            this.gpbConnectionSettings.Name = "gpbConnectionSettings";
-            this.gpbConnectionSettings.Size = new System.Drawing.Size(347, 100);
-            this.gpbConnectionSettings.TabIndex = 3;
-            this.gpbConnectionSettings.TabStop = false;
-            this.gpbConnectionSettings.Text = "Connection Settings";
+            gpbConnectionSettings.Controls.Add(tableLayoutPanel3);
+            gpbConnectionSettings.Location = new System.Drawing.Point(51, 1214);
+            gpbConnectionSettings.Margin = new System.Windows.Forms.Padding(8, 9, 8, 9);
+            gpbConnectionSettings.Name = "gpbConnectionSettings";
+            gpbConnectionSettings.Padding = new System.Windows.Forms.Padding(8, 9, 8, 9);
+            gpbConnectionSettings.Size = new System.Drawing.Size(983, 315);
+            gpbConnectionSettings.TabIndex = 3;
+            gpbConnectionSettings.TabStop = false;
+            gpbConnectionSettings.Text = "Connection Settings";
             // 
             // tableLayoutPanel3
             // 
-            this.tableLayoutPanel3.ColumnCount = 2;
-            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 83.57349F));
-            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 16.42651F));
-            this.tableLayoutPanel3.Controls.Add(this.lblMaxPacket, 0, 2);
-            this.tableLayoutPanel3.Controls.Add(this.txtTimeout, 1, 1);
-            this.tableLayoutPanel3.Controls.Add(this.lblTimeout, 0, 1);
-            this.tableLayoutPanel3.Controls.Add(this.lblEncryption, 0, 0);
-            this.tableLayoutPanel3.Controls.Add(this.ckbEncryption, 1, 0);
-            this.tableLayoutPanel3.Controls.Add(this.txtMaxPacket, 1, 2);
-            this.tableLayoutPanel3.Location = new System.Drawing.Point(6, 12);
-            this.tableLayoutPanel3.Name = "tableLayoutPanel3";
-            this.tableLayoutPanel3.RowCount = 3;
-            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 33.33333F));
-            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 33.33333F));
-            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 33.33333F));
-            this.tableLayoutPanel3.Size = new System.Drawing.Size(335, 82);
-            this.tableLayoutPanel3.TabIndex = 0;
+            tableLayoutPanel3.ColumnCount = 2;
+            tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 83.57349F));
+            tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 16.42651F));
+            tableLayoutPanel3.Controls.Add(lblMaxPacket, 0, 2);
+            tableLayoutPanel3.Controls.Add(txtTimeout, 1, 1);
+            tableLayoutPanel3.Controls.Add(lblTimeout, 0, 1);
+            tableLayoutPanel3.Controls.Add(lblEncryption, 0, 0);
+            tableLayoutPanel3.Controls.Add(ckbEncryption, 1, 0);
+            tableLayoutPanel3.Controls.Add(txtMaxPacket, 1, 2);
+            tableLayoutPanel3.Location = new System.Drawing.Point(17, 38);
+            tableLayoutPanel3.Margin = new System.Windows.Forms.Padding(8, 9, 8, 9);
+            tableLayoutPanel3.Name = "tableLayoutPanel3";
+            tableLayoutPanel3.RowCount = 3;
+            tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 33.33333F));
+            tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 33.33333F));
+            tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 33.33333F));
+            tableLayoutPanel3.Size = new System.Drawing.Size(949, 259);
+            tableLayoutPanel3.TabIndex = 0;
             // 
             // lblMaxPacket
             // 
-            this.lblMaxPacket.Anchor = System.Windows.Forms.AnchorStyles.Left;
-            this.lblMaxPacket.AutoSize = true;
-            this.lblMaxPacket.Location = new System.Drawing.Point(3, 61);
-            this.lblMaxPacket.Name = "lblMaxPacket";
-            this.lblMaxPacket.Size = new System.Drawing.Size(98, 13);
-            this.lblMaxPacket.TabIndex = 15;
-            this.lblMaxPacket.Text = "Max packet length:";
-            this.lblMaxPacket.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            lblMaxPacket.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            lblMaxPacket.AutoSize = true;
+            lblMaxPacket.Location = new System.Drawing.Point(8, 195);
+            lblMaxPacket.Margin = new System.Windows.Forms.Padding(8, 0, 8, 0);
+            lblMaxPacket.Name = "lblMaxPacket";
+            lblMaxPacket.Size = new System.Drawing.Size(270, 41);
+            lblMaxPacket.TabIndex = 15;
+            lblMaxPacket.Text = "Max packet length:";
+            lblMaxPacket.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // txtTimeout
             // 
-            this.txtTimeout.Dock = System.Windows.Forms.DockStyle.Left;
-            this.txtTimeout.Location = new System.Drawing.Point(282, 30);
-            this.txtTimeout.Name = "txtTimeout";
-            this.txtTimeout.Size = new System.Drawing.Size(43, 20);
-            this.txtTimeout.TabIndex = 1;
-            this.txtTimeout.Text = "10";
+            txtTimeout.Dock = System.Windows.Forms.DockStyle.Left;
+            txtTimeout.Location = new System.Drawing.Point(801, 95);
+            txtTimeout.Margin = new System.Windows.Forms.Padding(8, 9, 8, 9);
+            txtTimeout.Name = "txtTimeout";
+            txtTimeout.Size = new System.Drawing.Size(114, 47);
+            txtTimeout.TabIndex = 1;
+            txtTimeout.Text = "10";
             // 
             // lblTimeout
             // 
-            this.lblTimeout.Anchor = System.Windows.Forms.AnchorStyles.Left;
-            this.lblTimeout.AutoSize = true;
-            this.lblTimeout.Location = new System.Drawing.Point(3, 34);
-            this.lblTimeout.Name = "lblTimeout";
-            this.lblTimeout.Size = new System.Drawing.Size(150, 13);
-            this.lblTimeout.TabIndex = 11;
-            this.lblTimeout.Text = "Connection timeout (seconds):";
-            this.lblTimeout.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            lblTimeout.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            lblTimeout.AutoSize = true;
+            lblTimeout.Location = new System.Drawing.Point(8, 108);
+            lblTimeout.Margin = new System.Windows.Forms.Padding(8, 0, 8, 0);
+            lblTimeout.Name = "lblTimeout";
+            lblTimeout.Size = new System.Drawing.Size(425, 41);
+            lblTimeout.TabIndex = 11;
+            lblTimeout.Text = "Connection timeout (seconds):";
+            lblTimeout.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // lblEncryption
             // 
-            this.lblEncryption.Anchor = System.Windows.Forms.AnchorStyles.Left;
-            this.lblEncryption.AutoSize = true;
-            this.lblEncryption.Location = new System.Drawing.Point(3, 7);
-            this.lblEncryption.Name = "lblEncryption";
-            this.lblEncryption.Size = new System.Drawing.Size(135, 13);
-            this.lblEncryption.TabIndex = 14;
-            this.lblEncryption.Text = "Use encrypted connection:";
-            this.lblEncryption.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            lblEncryption.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            lblEncryption.AutoSize = true;
+            lblEncryption.Location = new System.Drawing.Point(8, 22);
+            lblEncryption.Margin = new System.Windows.Forms.Padding(8, 0, 8, 0);
+            lblEncryption.Name = "lblEncryption";
+            lblEncryption.Size = new System.Drawing.Size(373, 41);
+            lblEncryption.TabIndex = 14;
+            lblEncryption.Text = "Use encrypted connection:";
+            lblEncryption.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // ckbEncryption
             // 
-            this.ckbEncryption.AutoSize = true;
-            this.ckbEncryption.CheckAlign = System.Drawing.ContentAlignment.MiddleRight;
-            this.ckbEncryption.Dock = System.Windows.Forms.DockStyle.Left;
-            this.ckbEncryption.Location = new System.Drawing.Point(282, 3);
-            this.ckbEncryption.Name = "ckbEncryption";
-            this.ckbEncryption.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
-            this.ckbEncryption.Size = new System.Drawing.Size(29, 21);
-            this.ckbEncryption.TabIndex = 0;
-            this.ckbEncryption.Text = " ";
-            this.ckbEncryption.UseVisualStyleBackColor = true;
+            ckbEncryption.AutoSize = true;
+            ckbEncryption.CheckAlign = System.Drawing.ContentAlignment.MiddleRight;
+            ckbEncryption.Dock = System.Windows.Forms.DockStyle.Left;
+            ckbEncryption.Location = new System.Drawing.Point(801, 9);
+            ckbEncryption.Margin = new System.Windows.Forms.Padding(8, 9, 8, 9);
+            ckbEncryption.Name = "ckbEncryption";
+            ckbEncryption.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
+            ckbEncryption.Size = new System.Drawing.Size(64, 68);
+            ckbEncryption.TabIndex = 0;
+            ckbEncryption.Text = " ";
+            ckbEncryption.UseVisualStyleBackColor = true;
             // 
             // txtMaxPacket
             // 
-            this.txtMaxPacket.Dock = System.Windows.Forms.DockStyle.Left;
-            this.txtMaxPacket.Location = new System.Drawing.Point(282, 57);
-            this.txtMaxPacket.Name = "txtMaxPacket";
-            this.txtMaxPacket.Size = new System.Drawing.Size(43, 20);
-            this.txtMaxPacket.TabIndex = 2;
+            txtMaxPacket.Dock = System.Windows.Forms.DockStyle.Left;
+            txtMaxPacket.Location = new System.Drawing.Point(801, 181);
+            txtMaxPacket.Margin = new System.Windows.Forms.Padding(8, 9, 8, 9);
+            txtMaxPacket.Name = "txtMaxPacket";
+            txtMaxPacket.Size = new System.Drawing.Size(114, 47);
+            txtMaxPacket.TabIndex = 2;
             // 
             // lblVersion
             // 
-            this.lblVersion.AutoSize = true;
-            this.lblVersion.Font = new System.Drawing.Font("Microsoft Sans Serif", 7F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblVersion.Location = new System.Drawing.Point(-1, 522);
-            this.lblVersion.Name = "lblVersion";
-            this.lblVersion.Size = new System.Drawing.Size(28, 13);
-            this.lblVersion.TabIndex = 20;
-            this.lblVersion.Text = "v0.0";
+            lblVersion.AutoSize = true;
+            lblVersion.Font = new System.Drawing.Font("Microsoft Sans Serif", 7F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, 0);
+            lblVersion.Location = new System.Drawing.Point(-3, 1646);
+            lblVersion.Margin = new System.Windows.Forms.Padding(8, 0, 8, 0);
+            lblVersion.Name = "lblVersion";
+            lblVersion.Size = new System.Drawing.Size(56, 29);
+            lblVersion.TabIndex = 20;
+            lblVersion.Text = "v0.0";
             // 
             // ssdumpGUI
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(384, 536);
-            this.Controls.Add(this.lblVersion);
-            this.Controls.Add(this.gpbConnectionSettings);
-            this.Controls.Add(this.groupBox1);
-            this.Controls.Add(this.tableLayoutPanel1);
-            this.Controls.Add(this.btnExecute);
-            this.Controls.Add(this.txtTables);
-            this.Controls.Add(this.lblTables);
-            this.Controls.Add(this.menuStrip1);
-            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
-            this.MainMenuStrip = this.menuStrip1;
-            this.MaximizeBox = false;
-            this.MaximumSize = new System.Drawing.Size(400, 575);
-            this.MinimumSize = new System.Drawing.Size(400, 575);
-            this.Name = "ssdumpGUI";
-            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "ssdump (SQL Server Dump)";
-            this.Activated += new System.EventHandler(this.ssdumpGUI_Activated);
-            this.menuStrip1.ResumeLayout(false);
-            this.menuStrip1.PerformLayout();
-            this.tableLayoutPanel1.ResumeLayout(false);
-            this.tableLayoutPanel1.PerformLayout();
-            this.groupBox1.ResumeLayout(false);
-            this.tableLayoutPanel2.ResumeLayout(false);
-            this.tableLayoutPanel2.PerformLayout();
-            this.gpbConnectionSettings.ResumeLayout(false);
-            this.tableLayoutPanel3.ResumeLayout(false);
-            this.tableLayoutPanel3.PerformLayout();
-            this.ResumeLayout(false);
-            this.PerformLayout();
+            AutoScaleDimensions = new System.Drawing.SizeF(17F, 41F);
+            AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            ClientSize = new System.Drawing.Size(1043, 1536);
+            Controls.Add(lblVersion);
+            Controls.Add(gpbConnectionSettings);
+            Controls.Add(groupBox1);
+            Controls.Add(tableLayoutPanel1);
+            Controls.Add(btnExecute);
+            Controls.Add(txtTables);
+            Controls.Add(lblTables);
+            Controls.Add(menuStrip1);
+            FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
+            MainMenuStrip = menuStrip1;
+            Margin = new System.Windows.Forms.Padding(8, 9, 8, 9);
+            MaximizeBox = false;
+            MaximumSize = new System.Drawing.Size(1075, 1624);
+            MinimumSize = new System.Drawing.Size(1075, 1624);
+            Name = "ssdumpGUI";
+            StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
+            Text = "ssdump (SQL Server Dump)";
+            Activated += ssdumpGUI_Activated;
+            menuStrip1.ResumeLayout(false);
+            menuStrip1.PerformLayout();
+            tableLayoutPanel1.ResumeLayout(false);
+            tableLayoutPanel1.PerformLayout();
+            groupBox1.ResumeLayout(false);
+            tableLayoutPanel2.ResumeLayout(false);
+            tableLayoutPanel2.PerformLayout();
+            gpbConnectionSettings.ResumeLayout(false);
+            tableLayoutPanel3.ResumeLayout(false);
+            tableLayoutPanel3.PerformLayout();
+            ResumeLayout(false);
+            PerformLayout();
 
         }
 

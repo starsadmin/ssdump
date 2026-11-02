@@ -3,3 +3,4 @@
 */obj
 .vs
 *.user
+/ssdumpConsole/Properties/launchSettings.json
