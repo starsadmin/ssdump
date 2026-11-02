@@ -3,6 +3,7 @@
     <OutputType>WinExe</OutputType>
     <TargetFramework>net10.0-windows</TargetFramework>
     <UseWindowsForms>true</UseWindowsForms>
+	<EnableWindowsTargeting>true</EnableWindowsTargeting>
     <RootNamespace>ssdump</RootNamespace>
     <AssemblyName>ssdumpGUI</AssemblyName>
   </PropertyGroup>
