@@ -19,7 +19,7 @@ namespace ssdump
         /// <summary>
         /// Program version.
         /// </summary>
-        public static readonly string ProgramVersion = "0.10.0";
+        public static readonly string ProgramVersion = "0.10.3";
 
         public string Host { get; set; }
         public string Username { get; set; }
@@ -77,6 +77,18 @@ namespace ssdump
 
         public bool WriteToConsole { get; set; }
 
+        /// <summary>
+        /// Write sqlcmd's ":ON ERROR IGNORE" before the views, functions and procedures at the end of the script, so a run
+        /// with sqlcmd -b continues past ones that fail, e.g. because they reference databases that don't exist yet.
+        /// </summary>
+        public bool IgnoreObjectErrors { get; set; }
+
+        /// <summary>
+        /// Script every foreign key WITH CHECK, as the source has them. Otherwise, foreign keys from a table whose data is
+        /// dumped to a table whose data isn't are scripted WITH NOCHECK, as the dumped rows can point at rows that aren't there.
+        /// </summary>
+        public bool CheckAllForeignKeys { get; set; }
+
         public List<string> Tables { get; set; }
         public List<string> ExtraStatements { get; set; }
 
@@ -84,9 +96,11 @@ namespace ssdump
         {
             // Set default values.
             Host = "localhost";
+            CheckAllForeignKeys = false;
             IncludeCreateDatabase = false;
             IncludeUsers = false;
             DataDirectory = null;
+            IgnoreObjectErrors = false;
             LogDirectory = null;
             NoData = false;
             NoPrefetch = false;
@@ -193,11 +207,19 @@ namespace ssdump
                 HashSet<string> includedDataSchemas = ParseList(IncludedDataSchemas);
                 HashSet<string> includedDataTables = ParseList(IncludedDataTables);
 
-                // Foreign keys of dumped tables, written last.
+                // Foreign keys of dumped tables, written last. Sorted into foreignKeyUrns and noCheckForeignKeyUrns after the table loop.
+                List<ForeignKey> foreignKeys = [];
                 List<Urn> foreignKeyUrns = [];
+                List<Urn> noCheckForeignKeyUrns = [];
 
                 // Stored procedures (each followed by its extended properties) by "schema.name", scripted in a separate pass.
                 Dictionary<string, List<Urn>> procedureUrns = new(StringComparer.OrdinalIgnoreCase);
+
+                // Views and user-defined functions (each followed by its extended properties) by "schema.name", written near the end.
+                Dictionary<string, List<Urn>> viewAndFunctionUrns = new(StringComparer.OrdinalIgnoreCase);
+
+                // Every dumped table, to find the views and functions they need (see KeepTableDependencies).
+                List<Urn> tableUrns = [];
 
                 // If no specific tables were requested, write out database info.
                 if (Tables.Count == 0)
@@ -280,6 +302,30 @@ namespace ssdump
                         }
                     }
                     PrintIfNoOutput(" done");
+
+                    // Tables can have columns of user-defined data types (e.g. CREATE TYPE dbo.Name FROM varchar(50)),
+                    // and procedures can take user-defined table types, so both must exist first.
+                    // SMO's ordering writes types before the tables and procedures in the same list.
+                    PrintIfNoOutput("Adding user-defined data types and table types...", false);
+                    foreach (UserDefinedDataType userDefinedDataType in database.UserDefinedDataTypes)
+                    {
+                        urns.Add(userDefinedDataType.Urn);
+
+                        foreach (ExtendedProperty extendedProperty in userDefinedDataType.ExtendedProperties)
+                        {
+                            urns.Add(extendedProperty.Urn);
+                        }
+                    }
+                    foreach (UserDefinedTableType userDefinedTableType in database.UserDefinedTableTypes)
+                    {
+                        urns.Add(userDefinedTableType.Urn);
+
+                        foreach (ExtendedProperty extendedProperty in userDefinedTableType.ExtendedProperties)
+                        {
+                            urns.Add(extendedProperty.Urn);
+                        }
+                    }
+                    PrintIfNoOutput(" done");
                 }
 
                 // When dumping every table, load their columns, indexes, keys, triggers etc. in a few queries,
@@ -300,6 +346,7 @@ namespace ssdump
                     {
                         PrintIfNoOutput($"\t[{table.Schema}].[{table.Name}]");
                         urns.Add(table.Urn);
+                        tableUrns.Add(table.Urn);
 
                         // If the "no-data" flag is set, don't include data contained in tables.
                         if (!NoData)
@@ -341,13 +388,36 @@ namespace ssdump
 
                         foreach (ForeignKey foreignKey in table.ForeignKeys)
                         {
-                            foreignKeyUrns.Add(foreignKey.Urn);
-
-                            foreach (ExtendedProperty extendedProperty in foreignKey.ExtendedProperties)
-                            {
-                                foreignKeyUrns.Add(extendedProperty.Urn);
-                            }
+                            foreignKeys.Add(foreignKey);
                         }
+                    }
+                }
+
+                // Sorted after the loop, as a referenced table may come after the table referencing it.
+                HashSet<string> dataTables = new(StringComparer.OrdinalIgnoreCase);
+                foreach (Urn urn in dataUrns)
+                {
+                    dataTables.Add(ObjectKey(urn));
+                }
+
+                foreach (ForeignKey foreignKey in foreignKeys)
+                {
+                    // WITH CHECK fails if the dumped rows point at rows in a table whose data isn't dumped.
+                    Table table = (Table) foreignKey.Parent;
+                    string referencedTable = foreignKey.ReferencedTableSchema + "." + foreignKey.ReferencedTable;
+                    bool noCheck = !CheckAllForeignKeys && dataTables.Contains(table.Schema + "." + table.Name) && !dataTables.Contains(referencedTable);
+
+                    List<Urn> list = noCheck ? noCheckForeignKeyUrns : foreignKeyUrns;
+                    list.Add(foreignKey.Urn);
+
+                    foreach (ExtendedProperty extendedProperty in foreignKey.ExtendedProperties)
+                    {
+                        list.Add(extendedProperty.Urn);
+                    }
+
+                    if (noCheck)
+                    {
+                        Console.Error.WriteLine(string.Format("Warning: foreign key {0} on {1}.{2} is scripted WITH NOCHECK, as data for {3} is not included.", foreignKey.Name, table.Schema, table.Name, referencedTable));
                     }
                 }
 
@@ -360,12 +430,14 @@ namespace ssdump
                     {
                         if (!view.IsSystemObject)
                         {
-                            urns.Add(view.Urn);
+                            List<Urn> viewAndProperties = [view.Urn];
 
                             foreach (ExtendedProperty extendedProperty in view.ExtendedProperties)
                             {
-                                urns.Add(extendedProperty.Urn);
+                                viewAndProperties.Add(extendedProperty.Urn);
                             }
+
+                            viewAndFunctionUrns[ObjectKey(view.Urn)] = viewAndProperties;
                         }
                     }
                 }
@@ -398,22 +470,31 @@ namespace ssdump
                     {
                         if (!userDefinedFunction.IsSystemObject)
                         {
-                            urns.Add(userDefinedFunction.Urn);
+                            List<Urn> functionAndProperties = [userDefinedFunction.Urn];
 
                             foreach (ExtendedProperty extendedProperty in userDefinedFunction.ExtendedProperties)
                             {
-                                urns.Add(extendedProperty.Urn);
+                                functionAndProperties.Add(extendedProperty.Urn);
                             }
+
+                            viewAndFunctionUrns[ObjectKey(userDefinedFunction.Urn)] = functionAndProperties;
                         }
                     }
                     PrintIfNoOutput(" done");
                 }
 
-                // Dump everything.
-                if (urns.Count > 0)
+                if (viewAndFunctionUrns.Count > 0 && tableUrns.Count > 0)
+                {
+                    PrintIfNoOutput("Finding views and functions used by tables...", false);
+                    KeepTableDependencies(scripter, tableUrns, viewAndFunctionUrns, urns);
+                    PrintIfNoOutput(" done");
+                }
+
+                // Dump everything. Views can be requested by name with no tables, leaving urns empty.
+                if (urns.Count > 0 || viewAndFunctionUrns.Count > 0 || procedureUrns.Count > 0)
                 {
                     PrintIfNoOutput($"Writing scripts to {FilePath}    ...", false);
-                    WriteScripts(scripter, urns, procedureUrns, dataUrns, foreignKeyUrns);
+                    WriteScripts(scripter, urns, viewAndFunctionUrns, procedureUrns, dataUrns, foreignKeyUrns, noCheckForeignKeyUrns);
                     PrintIfNoOutput(" done");
                 }
             }
@@ -429,11 +510,16 @@ namespace ssdump
         /// </summary>
         /// <param name="scripter">Scripter object with options to write scripts</param>
         /// <param name="urns">List of objects to write out</param>
-        /// <param name="procedureUrns">Stored procedures (and their extended properties) to write after the other objects</param>
+        /// <param name="viewAndFunctionUrns">Views and functions (and their extended properties) to write after everything but procedures</param>
+        /// <param name="procedureUrns">Stored procedures (and their extended properties) to write last</param>
         /// <param name="dataUrns">Tables to write data for</param>
         /// <param name="foreignKeyUrns">Foreign keys to write after the data</param>
-        private void WriteScripts(Scripter scripter, List<Urn> urns, Dictionary<string, List<Urn>> procedureUrns, List<Urn> dataUrns, List<Urn> foreignKeyUrns)
+        /// <param name="noCheckForeignKeyUrns">Foreign keys to write after the data, WITH NOCHECK</param>
+        private void WriteScripts(Scripter scripter, List<Urn> urns, Dictionary<string, List<Urn>> viewAndFunctionUrns, Dictionary<string, List<Urn>> procedureUrns, List<Urn> dataUrns, List<Urn> foreignKeyUrns, List<Urn> noCheckForeignKeyUrns)
         {
+            // Order: tables (and the views/functions they need), data, foreign keys, extra statements, then views, functions
+            // and procedures. Those last three can reference other databases that may not exist yet where the script is run,
+            // so with IgnoreObjectErrors, they're at the end where sqlcmd can be told to carry on past them.
             using ScriptFileWriter writer = WriteToConsole ? new(Console.Out) : new(FilePath, MaxFileSize);
 
             // The first file switches to the new database after creating it (see EditCreateDatabase); later files
@@ -455,13 +541,11 @@ namespace ssdump
                 // The scripter also prefetches child objects itself while scripting, separately from database.PrefetchObjects.
                 // Only turned off for this schema pass: with it off, SMO's data scripting queries tables from the wrong database.
                 scripter.PrefetchObjects = !NoPrefetch;
-                scripter.EnumScriptWithList(urns.ToArray()); // Will write database/schemas/tables to file.
-                EditCreateDatabase(tempFilename);
-                writer.CopyFrom(tempFilename);
-
-                if (procedureUrns.Count > 0)
+                if (urns.Count > 0)
                 {
-                    WriteProcedureScripts(scripter, procedureUrns, writer); // Writes procedures after the tables, views and functions they use.
+                    scripter.EnumScriptWithList(urns.ToArray()); // Will write database/schemas/tables to file.
+                    EditCreateDatabase(tempFilename);
+                    writer.CopyFrom(tempFilename);
                 }
                 scripter.PrefetchObjects = true;
 
@@ -475,16 +559,78 @@ namespace ssdump
                     WriteForeignKeyScripts(scripter, foreignKeyUrns); // Writes foreign keys after data, to avoid foreign key constraint errors.
                     writer.CopyFrom(tempFilename);
                 }
+
+                if (noCheckForeignKeyUrns.Count > 0)
+                {
+                    WriteForeignKeyScripts(scripter, noCheckForeignKeyUrns);
+                    MakeForeignKeysNoCheck(tempFilename);
+                    writer.CopyFrom(tempFilename);
+                }
+
+                // Before the views etc., so errors here still stop sqlcmd.
+                foreach (string extra in ExtraStatements)
+                {
+                    writer.WriteLine(extra);
+                    writer.EndBatch();
+                }
+
+                if (IgnoreObjectErrors && (viewAndFunctionUrns.Count > 0 || procedureUrns.Count > 0))
+                {
+                    // A sqlcmd setting, so like IDENTITY_INSERT it has to be repeated at the top of each later file.
+                    writer.WriteLine(":ON ERROR IGNORE");
+                    writer.EndBatch();
+                    writer.StartSession(":ON ERROR IGNORE", null);
+                }
+
+                // The data and foreign key passes changed these, so set them back for scripting schema to file.
+                scripter.Options.ScriptSchema = true;
+                scripter.Options.ScriptData = false;
+                scripter.Options.ToFileOnly = true;
+                scripter.Options.AppendToFile = false;
+                scripter.PrefetchObjects = !NoPrefetch;
+
+                if (viewAndFunctionUrns.Count > 0)
+                {
+                    List<Urn> viewsAndFunctions = [];
+                    foreach (List<Urn> objectAndProperties in viewAndFunctionUrns.Values)
+                    {
+                        viewsAndFunctions.AddRange(objectAndProperties);
+                    }
+
+                    scripter.EnumScriptWithList(viewsAndFunctions.ToArray()); // Will write views/functions to file, ordered by dependency.
+                    writer.CopyFrom(tempFilename);
+                }
+
+                if (procedureUrns.Count > 0)
+                {
+                    WriteProcedureScripts(scripter, procedureUrns, writer); // Writes procedures after the tables, views and functions they use.
+                }
             }
             finally
             {
                 File.Delete(tempFilename);
             }
+        }
 
-            foreach (string extra in ExtraStatements)
+        /// <summary>
+        /// Move the views and functions that tables need (e.g. a function called by a computed column, CHECK or DEFAULT)
+        /// from viewAndFunctionUrns to urns, so they're created with the tables instead of at the end, after the tables need them.
+        /// </summary>
+        /// <param name="scripter">Scripter object, used to find dependencies</param>
+        /// <param name="tableUrns">Tables being dumped</param>
+        /// <param name="viewAndFunctionUrns">Views and functions by "schema.name", each list being the object then its extended properties</param>
+        /// <param name="urns">Objects written with the tables</param>
+        private static void KeepTableDependencies(Scripter scripter, List<Urn> tableUrns, Dictionary<string, List<Urn>> viewAndFunctionUrns, List<Urn> urns)
+        {
+            // The walk includes indirect dependencies too, e.g. a view that a function used by a table selects from.
+            DependencyTree tree = scripter.DiscoverDependencies(tableUrns.ToArray(), DependencyType.Parents);
+            foreach (DependencyCollectionNode node in scripter.WalkDependencies(tree))
             {
-                writer.WriteLine(extra);
-                writer.EndBatch();
+                if ((node.Urn.Type == "View" || node.Urn.Type == "UserDefinedFunction")
+                    && viewAndFunctionUrns.Remove(ObjectKey(node.Urn), out List<Urn> objectAndProperties))
+                {
+                    urns.AddRange(objectAndProperties);
+                }
             }
         }
 
@@ -685,6 +831,27 @@ namespace ssdump
             scripter.Options.ToFileOnly = true;
             scripter.Options.AppendToFile = false;
             scripter.EnumScriptWithList(foreignKeyUrns.ToArray()); // Will write to file.
+        }
+
+        /// <summary>
+        /// Change "WITH CHECK ADD CONSTRAINT" to "WITH NOCHECK ADD CONSTRAINT" in a foreign key script, so existing rows aren't checked.
+        /// </summary>
+        /// <param name="scriptFilePath">Foreign key script written by SMO (no data, so small enough to read whole)</param>
+        private static void MakeForeignKeysNoCheck(string scriptFilePath)
+        {
+            string script;
+            System.Text.Encoding encoding;
+            using (StreamReader reader = new(scriptFilePath, detectEncodingFromByteOrderMarks: true))
+            {
+                script = reader.ReadToEnd();
+                encoding = reader.CurrentEncoding; // Write it back the way SMO wrote it.
+            }
+
+            // The "ALTER TABLE ... CHECK CONSTRAINT" that SMO writes after each one is left alone: without WITH CHECK,
+            // it only enables the constraint, and doesn't check existing rows either.
+            // Anchored to ALTER TABLE so text in extended properties isn't changed.
+            script = Regex.Replace(script, @"^(ALTER TABLE .*?\s)WITH CHECK ADD(\s)", "$1WITH NOCHECK ADD$2", RegexOptions.Multiline | RegexOptions.IgnoreCase);
+            File.WriteAllText(scriptFilePath, script, encoding);
         }
 
         /// <summary>

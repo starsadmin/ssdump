@@ -23,7 +23,8 @@ namespace ssdump
                 // Option set, maps command-line options to variables above.
                 OptionSet options = new()
                 {
-                    { "create-db", "Include CREATE DATABASE statement", value => processor.IncludeCreateDatabase = value != null },
+                    { "check-all-foreign-keys", "Script every foreign key WITH CHECK, even from tables with data to tables without data (by default those are WITH NOCHECK, so adding them doesn't fail)", value => processor.CheckAllForeignKeys = value != null },
+                    { "create-db","Include CREATE DATABASE statement", value => processor.IncludeCreateDatabase = value != null },
                     { "data-dir=", "With --create-db, put the data file (.mdf) in this folder on the target server", value => processor.DataDirectory = value },
                     { "encrypt","Use encrypted connection", value => processor.UseEncryption = value != null },
                     { "help", "Show help message", value => help = value != null },
@@ -38,6 +39,7 @@ namespace ssdump
                     { "max-file-size=", "With --output, split into files of at most this many MB, named name-001.sql, name-002.sql, ... (default 1536; 0 = one file)", (int value) => maxFileSizeMegabytes = value },
                     { "o|output=", "Write to this file instead of the console", value => outputPath = value },
                     { "p|password=", "Password to use when connecting to server", value => processor.Password = value },
+                    { "sqlcmd-ignore-object-errors", "Write sqlcmd's :ON ERROR IGNORE before the views, functions and procedures (at the end), so sqlcmd -b continues past ones that fail", value => processor.IgnoreObjectErrors = value != null },
                     { "timeout=", "Connection timeout (seconds)", (int value) => processor.Timeout = value },
                     { "u|user=", "User to use if not current user (SQL Server authentication)", value => processor.Username = value },
                     { "verbose", "Log each SQL statement sent to the server to stderr, with timestamps", value => processor.Verbose = value != null }

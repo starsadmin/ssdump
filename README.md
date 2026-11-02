@@ -26,7 +26,7 @@ Here's a more complex example, to show off some of the other options:
 - Includes CREATE DATABASE statement
 - Specifies the directory where the new database should store its data
 - Specifies the directory where the new database should store its logs
-- Only includes data (INSERT statements) for DimAccount. Foreign keys are created last, so it's safe to only include data from tables with foreign keys to blank tables.
+- Only includes data (INSERT statements) for DimAccount. Foreign keys are created last, and foreign keys from tables with data to tables without data are created `WITH NOCHECK`, so it's safe to only include data from tables with foreign keys to blank tables. Use `--check-all-foreign-keys` to create every foreign key `WITH CHECK` instead.
 - Outputs file(s) to a path on the local machine. If this option is present, the console will show progress instead of printing the script to stdout.
 - Splits output files into 1GB chunks (1024MB), to open them more easily in SQL Server Management Studio (the next best thing if you're not familiar with sqlcommand on the command line)
 ```
@@ -34,7 +34,7 @@ ssdump AdventureWorks [ DimAccount,DimCurrency ] --host sqlserver.company.com --
 ```
 
 ssdump uses the Microsoft.SqlServer.SqlManagementObjects NuGet package to do a lot of the work, but attempts to clean up the output a little bit and add extra features.
-- Options to only include data from specific tables, without breaking foreign keys (foreign keys are added to the script after INSERT statements).
+- Options to only include data from specific tables, without breaking foreign keys (foreign keys are added to the script after INSERT statements, and `WITH NOCHECK` when they point at a table without data).
 - Simplifies CREATE DATABASE statement, so it doesn't demand an enourmous amount of storage space if it's a big database.
 - You may optionally specify data directory and log directory, as part of the CREATE DATABASE statement.
 - Attempts to reorder procedures and functions, in order of dependency.

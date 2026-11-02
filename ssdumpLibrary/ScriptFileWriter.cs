@@ -85,7 +85,7 @@ namespace ssdump
         /// <summary>
         /// Mark a setting, e.g. "SET IDENTITY_INSERT [dbo].[T] ON", as needed by the batches that follow.
         /// Such settings only last for one connection, so if a new file is started, the old file ends with
-        /// endStatement and the new file starts with startStatement. The caller writes startStatement itself.
+        /// endStatement (if not null) and the new file starts with startStatement. The caller writes startStatement itself.
         /// </summary>
         public void StartSession(string startStatement, string endStatement)
         {
